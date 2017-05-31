@@ -11,7 +11,8 @@ import Foundation
 struct CalculatorBrain {
     
     private var accumulator: Double?
-    private var processAccumulator: String?
+    private var accumulatorStr: String?
+    private var firstAccumulatorStr: String?
     
     private var pendingBinaryOperation: PendingBinaryOperation?
     
@@ -40,14 +41,15 @@ struct CalculatorBrain {
     
     mutating func setOperand(_ operand: Double) {
         accumulator = operand
+        accumulatorStr = String(operand)
     }
     
     private struct PendingBinaryOperation {
         let function: ((Double, Double) -> Double)
         let firstOperand: Double
-        var processFunction: (String, String) -> String
-        var processOperand: String
-        
+        let processFunction: (String, String) -> String
+        let processOperand: String
+    
         func perform(with secondOperand: Double) -> Double {
             return function(firstOperand, secondOperand)
         }
@@ -69,8 +71,10 @@ struct CalculatorBrain {
                 }
             case .binaryOperation(let function, let processFunction):
                 if accumulator != nil {
-                    pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!, processFunction: processFunction, processOperand:  "\(accumulator!)")
+                    pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!, processFunction: processFunction, processOperand:  accumulatorStr!)
                     accumulator = nil
+                    firstAccumulatorStr = accumulatorStr
+                    accumulatorStr = nil
                 }
             case .equal:
                 performPendingBinaryOperation()
@@ -81,19 +85,26 @@ struct CalculatorBrain {
     private mutating func performPendingBinaryOperation() {
         if accumulator != nil && pendingBinaryOperation != nil {
             accumulator = pendingBinaryOperation?.perform(with: accumulator!)
-            processAccumulator = (pendingBinaryOperation?.getProcess(with: "\(accumulator!)"))!
+            accumulatorStr = pendingBinaryOperation?.getProcess(with: accumulatorStr!)
             pendingBinaryOperation = nil
         }
     }
     
     mutating func clear() {
         accumulator = 0
+        accumulatorStr = nil
         pendingBinaryOperation = nil
+    }
+    
+    var getFirstProcess: String? {
+        get {
+            return firstAccumulatorStr
+        }
     }
     
     var getProcess: String? {
         get {
-            return processAccumulator
+            return accumulatorStr
         }
     }
     

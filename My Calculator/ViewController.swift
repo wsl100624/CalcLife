@@ -56,6 +56,9 @@ class ViewController: UIViewController {
         
         if let mathSymbol = sender.currentTitle {
             brain.performOperation(mathSymbol)
+            if let getProcess = brain.getFirstProcess {
+                process.text = getProcess + " " + mathSymbol
+            }
         }
         
         if let result = brain.result {
@@ -71,6 +74,7 @@ class ViewController: UIViewController {
     @IBAction func clear(_ sender: UIButton) {
         brain.clear()
         displayValue = 0
+        process.text = " "
         userTouched = false
     }
     
