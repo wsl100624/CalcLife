@@ -45,6 +45,7 @@ class ViewController: UIViewController {
         }
     }
     
+    
     @IBAction func performOperator(_ sender: UIButton) {
         
         //user already touched, so at this point userTouched = true
@@ -59,6 +60,10 @@ class ViewController: UIViewController {
         
         if let result = brain.result {
             displayValue = result
+        }
+        
+        if let processResult = brain.getProcess {
+            process.text = processResult
         }
         
     }
